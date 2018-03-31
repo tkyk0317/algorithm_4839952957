@@ -32,6 +32,15 @@ object Chapter11 {
         // 入力文字列のLCSを算出.
         s.foreach({ case (s1, s2) => println(lcs(s1, s2)) })
       }
+      case 4 => {
+        // 連結行列積.
+        val n = io.StdIn.readLine.trim.toInt
+        val p = (1 to n).foldLeft(List[Pair[Int, Int]]())((acc, x) => {
+          val m = io.StdIn.readLine.trim.split(' ')
+          acc :+ (m(0).toInt, m(1).toInt)
+        })
+        println(mcm(p))
+      }
       case _ => {
         println("not find command")
       }
@@ -83,7 +92,9 @@ object Chapter11 {
   }
 
   /**
-   * 連鎖行列積.
+   * 連鎖行列積（Matrix Chain Multiplication）.
+   *
+   * @param Array[Pair[Int, Int]] 各行列の行と列を一次元配列に展開したもの.
    *
    * [入力フォーマット]
    *   １行目：行列の数
@@ -97,6 +108,20 @@ object Chapter11 {
    *   5 10
    *   10 20
    *   20 25
+   *
+   * 15125
    */
+  def mcm(p: List[Pair[Int, Int]]): Int = {
+    p match {
+      case (a: Int, b: Int) :: Nil => 0
+      case _ => {
+        // 行列の配列を分割しながら算出.
+        (1 to p.length - 1).foldLeft(Int.MaxValue)((acc, x) => {
+          val (a, b) = p.splitAt(x)
+          scala.math.min(acc, mcm(a) + mcm(b) + a.head._1 * a.last._2 * b.last._2)
+        })
+      }
+    }
+  }
 }
 
